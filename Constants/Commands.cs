@@ -7,10 +7,14 @@
         /// PARTICIPANTS COMMANDS;
         /// </summary>
         public const string AddParticipant = @"insert into dbo.conference_participants(id,name,phone,email," +
-                                             "organization,position,hotel,room,special_need,remark,picture,gender,conference_id)" +
-                                             " values(@id,@name,@phone,@email,@org,@pos,@hot,@rm,@sn,@remark,@pic,@gender,@cid)";
+                                             "organization,position,disabled,disability,diet,location,picture,gender,conference_id,accomodation)" +
+                                             " values(@id,@name,@phone,@email,@org,@pos,@dis,@disa,@diet,@loc,@pic,@gender,@cid,@acm)";
+        
+        public const string UpdateParticipant = "update dbo.conference_participants set name=@name,email=@mail,phone=@phone,location=@loc,gender=@gender,accomodation=@acm,position=@pos,diet=@diet,organization=@org where id=@id";
         //
         public const string GetParticipantById = "select * from dbo.conference_participants where id=@id";
+        public const string GetParticipantByEmail = "select * from dbo.conference_participants where email=@mail";
+        public const string CheckParticipant = "select * from dbo.conference_participants where (email=@mail and conference_id=@cid)";
         //
         public const string GetAllParticipants ="select * from conference_participants";
         /// <summary>
@@ -18,7 +22,7 @@
         /// </summary>
         public const string GetAllConferences = "select * from dbo.conferences";
         public const string GetConferenceById = "select * from dbo.conferences where id=@id";
-        public const string AddConference = "insert into dbo.conferences(id,title,venue,description,date,status,time) values(@id,@title,@venue,@des,@date,@status,@time)";
+        public const string AddConference = "insert into dbo.conferences(id,title,venue,description,start_date,end_date,status) values(@id,@title,@venue,@des,@sdate,@edate,@status)";
 
 
         /// <summary>
@@ -29,5 +33,10 @@
         public const string GetUserByUsername = "select * from dbo.users where username=@username";
         public const string RegisterUser = "insert into dbo.users(id,role,status,username,name,password) values(@id,@role,@status,@username,@name,@pwd)";
 
+
+        public const string GetGuest = "select * from guest";
+        public const string GetGuestById = "select * from guest where id=@id";
+        public const string AddGuest = "insert into dbo.guest(id,name,role,portfolio,picture) values(@id,@name,@role,@port,@pic)";
+        public const string DeleteGuest = "delete from dbo.guest where id=@id";
     }
 }

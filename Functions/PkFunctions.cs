@@ -22,5 +22,11 @@ namespace server.Functions
             Random random = new Random();
             return ConstantValues.PARTICIPANT + random.Next(100, 999);
         }
+
+        public string GenerateGuestId()
+        {
+            Random rand = new Random();
+            return ConstantValues.GUEST + rand.Next(100, 999).ToString();
+        }
     }
 }

@@ -7,6 +7,7 @@ using server.Services;
 using server.Functions;
 using server.Utils;
 using Microsoft.AspNetCore.Hosting;
+using System.Threading.Tasks;
 
 namespace server.Controllers
 {
@@ -45,7 +46,7 @@ namespace server.Controllers
             try
             {
                 model = services.AddConference(model, configuration);
-                return new JsonResult(Newtonsoft.Json.JsonConvert.SerializeObject(model.message));
+                return new JsonResult(Newtonsoft.Json.JsonConvert.SerializeObject(services.GetConferences(configuration)));
             }
             catch (Exception ex)
             {
@@ -53,6 +54,7 @@ namespace server.Controllers
                 return Response404(ex.Message);
             }
         }
+
         [HttpPost("participants/get")]
         public JsonResult GetParticipants()
         {
@@ -67,7 +69,7 @@ namespace server.Controllers
             }
         }
         [HttpPost("participant/add")]
-        public JsonResult AddParticipant([FromForm] ParticipantModel model)
+        public async Task<JsonResult> AddParticipant([FromForm] ParticipantModel model)
         {
             try
             {
@@ -77,19 +79,29 @@ namespace server.Controllers
                 model.gender = Request.Form["gender"].ToString();
                 model.email = Request.Form["email"].ToString();
                 model.position = Request.Form["position"].ToString();
-                model.hotel = Request.Form["hotel"].ToString();
-                model.room = Request.Form["room"].ToString();
+                model.disability = Request.Form["disability"].ToString();
+                model.disabled =int.Parse(Request.Form["disabled"].ToString());
                 model.conference_id = Request.Form["conference_id"].ToString();
-                model.special_need = Request.Form["special_need"].ToString();
-                model.remark = Request.Form["remark"].ToString();
+                model.diet = Request.Form["diet"].ToString();
+                model.location = Request.Form["location"].ToString();
                 model.organization = Request.Form["organization"].ToString();
-                model.file = Request.Form.Files[0];
+                model.accomodation = int.Parse(Request.Form["accomodation"].ToString());
+                model.file =Request.Form.Files.Count>0? Request.Form.Files[0]:null;
                 validation.ValidateParticipant(model);
-                if (model.file != null ||model.file.Length>0)
+                if (Request.Form.Files.Count>0)
                 {
                     model.picture = afunctions.HandleUploadedFile(model, webHostEnvironment);
                 }
+                else
+                {
+                    model.picture = "";
+                }
                 model = services.AddMember(model, configuration);
+                ConferenceModel cm = new ConferenceModel();
+                cm.id = model.conference_id;
+                ConferenceModel cmodel = new ModelFunction().FormatConferenceModelInfo(services.GetConferenceById(cm, configuration));
+                string msg = new MessageServices().FormatEndpointMessage(name: model.name, title: cmodel.title, sdate: cmodel.start_date, edate: cmodel.end_date, venue: cmodel.venue);
+                await new MessageServices().SendSMS(phoneNumber: model.phone.TrimEnd(), msg);
                 return new JsonResult(Newtonsoft.Json.JsonConvert.SerializeObject(services.GetAllParticipants(configuration)));
             }
             catch (Exception ex)
@@ -98,6 +110,79 @@ namespace server.Controllers
                 return Response404(ex.Message);
             }
         }
+
+        [HttpPost("participant/update")]
+        public JsonResult UpdateInfo(ParticipantModel model)
+        {
+            try
+            {
+
+                model = services.UpdateInfo(model, configuration);
+                return new JsonResult(Newtonsoft.Json.JsonConvert.SerializeObject(model.message));
+            }
+            catch (Exception ex)
+            {
+
+                return Response404(ex.Message);
+            }
+        }
+        [HttpPost("participant/login")]
+        public JsonResult LoginMember(ParticipantModel model)
+        {
+            try
+            {
+
+                return new JsonResult(Newtonsoft.Json.JsonConvert.SerializeObject(services.MemberLogin(model, configuration)));
+            }
+            catch (Exception ex)
+            {
+
+                return Response404(ex.Message);
+            }
+        }
+        [HttpPost("member/add")]
+        public async Task<JsonResult> AddMember([FromForm] ParticipantModel model)
+        {
+            try
+            {
+                var file = Request.Form["file"];
+                model.name = Request.Form["name"].ToString();
+                model.phone = Request.Form["phone"].ToString();
+                model.gender = Request.Form["gender"].ToString();
+                model.email = Request.Form["email"].ToString();
+                model.position = Request.Form["position"].ToString();
+                model.disability = Request.Form["disability"].ToString();
+                model.disabled = int.Parse(Request.Form["disabled"].ToString());
+                model.conference_id = Request.Form["conference_id"].ToString();
+                model.diet = Request.Form["diet"].ToString();
+                model.location = Request.Form["location"].ToString();
+                model.organization = Request.Form["organization"].ToString();
+                model.accomodation = int.Parse(Request.Form["accomodation"].ToString());
+                model.file = Request.Form.Files.Count > 0 ? Request.Form.Files[0] : null;
+                validation.ValidateParticipant(model);
+                if (Request.Form.Files.Count>0)
+                {
+                    model.picture = afunctions.HandleUploadedFile(model, webHostEnvironment);
+                }
+                else
+                {
+                    model.picture = "";
+                }
+                model = services.RegisterMember(model, configuration);
+                ConferenceModel cm = new ConferenceModel();
+                cm.id = model.conference_id;
+                ConferenceModel cmodel = new ModelFunction().FormatConferenceModelInfo(services.GetConferenceById(cm,configuration));
+                string msg = new MessageServices().FormatEndpointMessage(name:model.name,title:cmodel.title,sdate:cmodel.start_date,edate:cmodel.end_date,venue:cmodel.venue);
+                await new MessageServices().SendSMS(phoneNumber: model.phone.TrimEnd(), msg);
+                return new JsonResult(Newtonsoft.Json.JsonConvert.SerializeObject(model));
+            }
+            catch (Exception ex)
+            {
+
+                return Response404(ex.Message);
+            }
+        }
+
 
         [HttpPost("user/add")]
         public JsonResult AddUser(UserModel model)
@@ -138,6 +223,64 @@ namespace server.Controllers
             Response.StatusCode = StatusCodes.Status404NotFound;
             return new JsonResult(error);
         }
+
+        [HttpPost("guest/add")]
+        public JsonResult AddMember([FromForm] GuestModel model)
+        {
+            try
+            {
+                var file = Request.Form["file"];
+                model.name = Request.Form["name"].ToString();
+                model.role = Request.Form["role"].ToString();
+                model.portfolio = Request.Form["portfolio"].ToString();
+                model.id = Request.Form["position"].ToString();
+               
+                if (model.file != null || model.file.Length > 0)
+                {
+                    model.picture = afunctions.HandleGuestFile(model, webHostEnvironment);
+                }
+                services.RegisterGuest(model, configuration);
+                ConferenceModel cm = new ConferenceModel();
+                
+                return new JsonResult(Newtonsoft.Json.JsonConvert.SerializeObject(services.GetGuest(configuration)));
+            }
+            catch (Exception ex)
+            {
+
+                return Response404(ex.Message);
+            }
+        }
+
+        [HttpPost("guest/get")]
+        public JsonResult GetMember()
+        {
+            try
+            {
+              
+                return new JsonResult(Newtonsoft.Json.JsonConvert.SerializeObject(services.GetGuest(configuration)));
+            }
+            catch (Exception ex)
+            {
+
+                return Response404(ex.Message);
+            }
+        }
+
+        [HttpPost("guest/delete")]
+        public JsonResult DeleteMember(GuestModel model)
+        {
+            try
+            {
+                services.DeleteGuest(model, configuration);
+                return new JsonResult(Newtonsoft.Json.JsonConvert.SerializeObject(services.GetGuest(configuration)));
+            }
+            catch (Exception ex)
+            {
+
+                return Response404(ex.Message);
+            }
+        }
+
 
     }
 }

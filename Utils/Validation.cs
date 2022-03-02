@@ -30,6 +30,19 @@ namespace server.Utils
                 {
                     throw GenerateStack(error: "Gender Required");
                 }
+                if (model.location == null || model.location.Length <= 0)
+                {
+                    throw GenerateStack(error: "Please Specify Location");
+                }
+                if (model.disabled == 1 && (model.disability==null|| model.disability.Length <= 0))
+                {
+                    throw GenerateStack(error: "Please Specify Disability(s)");
+                }
+                if (model.conference_id == null || model.conference_id.Length <= 0)
+                {
+                    throw GenerateStack(error: "Please Specify Conference");
+                }
+
             }
             catch (System.Exception)
             {
@@ -51,17 +64,17 @@ namespace server.Utils
             {
                 throw GenerateStack(error: "Please Enter Conference Venue",source:"Conference Details");
             }
-            if(model.date==null||model.date.Length <= 0)
+            if(model.start_date==null||model.start_date.Length <= 0)
             {
-                throw GenerateStack(error: "Please Enter Conference Date");
+                throw GenerateStack(error: "Please Enter Conference Start Date");
             }
             if (model.title == null || model.title.Length <= 0)
             {
                 throw GenerateStack(error: "Please Enter Conference Title");
             }
-            if (model.time == null || model.time.Length <= 0)
+            if (model.end_date == null || model.end_date.Length <= 0)
             {
-                throw GenerateStack(error: "Please Enter Conference Time");
+                throw GenerateStack(error: "Please Enter Conference End Date");
             }
         }
 
@@ -80,5 +93,38 @@ namespace server.Utils
                 throw GenerateStack(error: "Password Required");
             }
         }
+
+        //public void ValidateMemberInfo(ParticipantModel model)
+        //{
+        //    if(model.name==null || model.name.Length <= 0)
+        //    {
+        //        throw GenerateStack("Name required");
+        //    }
+        //    if (model.phoe == null || model.name.Length <= 0)
+        //    {
+        //        throw GenerateStack("Name required");
+        //    }
+        //    if (model.name == null || model.name.Length <= 0)
+        //    {
+        //        throw GenerateStack("Name required");
+        //    }
+        //    if (model.name == null || model.name.Length <= 0)
+        //    {
+        //        throw GenerateStack("Name required");
+
+        //    }
+        //    if (model.name == null || model.name.Length <= 0)
+        //    {
+        //        throw GenerateStack("Name required");
+        //    }
+        //    if (model.name == null || model.name.Length <= 0)
+        //    {
+        //        throw GenerateStack("Name required");
+        //    }
+        //    if (model.name == null || model.name.Length <= 0)
+        //    {
+        //        throw GenerateStack("Name required");
+        //    }
+        //}
     }
 }

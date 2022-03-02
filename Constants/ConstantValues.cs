@@ -6,6 +6,7 @@
         public const string CONFERENCE = "UECF";
         public const string PARTICIPANT = "UEPA";
         public const string USER = "UEUI";
+        public const string GUEST = "UESG";
 
     }
 }

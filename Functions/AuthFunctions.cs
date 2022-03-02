@@ -34,6 +34,7 @@ namespace server.Functions
                         model.username = row["username"].ToString();
                         model.status = int.Parse(row["status"].ToString());
                         model.role = int.Parse(row["role"].ToString());
+                        model.password = row["password"].ToString();
                     }
                 }
                 return model;

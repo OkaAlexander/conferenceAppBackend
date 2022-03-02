@@ -15,6 +15,7 @@ namespace server.Services
         Validation validation = new Validation();
         AuthFunctions authentication = new AuthFunctions();
         ServerConnection router = new ServerConnection();
+        ModelFunction models = new ModelFunction();
 
         /// <summary>
         /// ADD PARTICIPANT
@@ -32,6 +33,10 @@ namespace server.Services
                 {
                     model.id = functions.GenerateParticipantId();
                 }
+                if(GetMemberByEmailAndConference(model,config).Rows.Count > 0)
+                {
+                    throw new Exception("You have already registered for this conference.For more info contact 000 000 0000. Thank You");
+                }
 
                 router.cmd = new SqlCommand(Commands.AddParticipant, router.Connection(config));
                 router.cmd.Parameters.Add("@id", SqlDbType.VarChar).Value = model.id;
@@ -39,14 +44,15 @@ namespace server.Services
                 router.cmd.Parameters.Add("@phone", SqlDbType.VarChar).Value = model.phone;
                 router.cmd.Parameters.Add("@email", SqlDbType.VarChar).Value = model.email;
                 router.cmd.Parameters.Add("@gender", SqlDbType.VarChar).Value = model.gender;
-                router.cmd.Parameters.Add("@hot", SqlDbType.VarChar).Value = model.hotel;
-                router.cmd.Parameters.Add("@rm", SqlDbType.VarChar).Value = model.room;
-                router.cmd.Parameters.Add("@remark", SqlDbType.VarChar).Value = model.remark;
-                router.cmd.Parameters.Add("@sn", SqlDbType.VarChar).Value = model.special_need;
+                router.cmd.Parameters.Add("@dis", SqlDbType.Int).Value = model.disabled;
+                router.cmd.Parameters.Add("@disa", SqlDbType.VarChar).Value = model.disability;
+                router.cmd.Parameters.Add("@loc", SqlDbType.VarChar).Value = model.location;
+                router.cmd.Parameters.Add("@diet", SqlDbType.VarChar).Value = model.diet;
                 router.cmd.Parameters.Add("@pos", SqlDbType.VarChar).Value = model.position;
                 router.cmd.Parameters.Add("@pic", SqlDbType.VarChar).Value = model.picture;
                 router.cmd.Parameters.Add("@org", SqlDbType.VarChar).Value = model.organization;
                 router.cmd.Parameters.Add("@cid", SqlDbType.VarChar).Value = model.conference_id;
+                router.cmd.Parameters.Add("@acm", SqlDbType.Int).Value = model.accomodation;
 
                 router.OpenConnection();
                 router.cmd.ExecuteNonQuery();
@@ -62,6 +68,81 @@ namespace server.Services
             }
         }
 
+        public ParticipantModel RegisterMember(ParticipantModel model, IConfiguration config)
+        {
+            try
+            {
+                validation.ValidateParticipant(model);
+                model.id = functions.GenerateParticipantId();
+                while (GetMemberByID(model, config).Rows.Count > 0)
+                {
+                    model.id = functions.GenerateParticipantId();
+                }
+                if (GetMemberByEmailAndConference(model, config).Rows.Count > 0)
+                {
+                    throw new Exception("You have already registered for this conference.For more info contact 000 000 0000. Thank You");
+                }
+
+                router.cmd = new SqlCommand(Commands.AddParticipant, router.Connection(config));
+                router.cmd.Parameters.Add("@id", SqlDbType.VarChar).Value = model.id;
+                router.cmd.Parameters.Add("@name", SqlDbType.VarChar).Value = model.name;
+                router.cmd.Parameters.Add("@phone", SqlDbType.VarChar).Value = model.phone;
+                router.cmd.Parameters.Add("@email", SqlDbType.VarChar).Value = model.email;
+                router.cmd.Parameters.Add("@gender", SqlDbType.VarChar).Value = model.gender;
+                router.cmd.Parameters.Add("@dis", SqlDbType.Int).Value = model.disabled;
+                router.cmd.Parameters.Add("@disa", SqlDbType.VarChar).Value = model.disability;
+                router.cmd.Parameters.Add("@loc", SqlDbType.VarChar).Value = model.location;
+                router.cmd.Parameters.Add("@diet", SqlDbType.VarChar).Value = model.diet;
+                router.cmd.Parameters.Add("@pos", SqlDbType.VarChar).Value = model.position;
+                router.cmd.Parameters.Add("@pic", SqlDbType.VarChar).Value = model.picture;
+                router.cmd.Parameters.Add("@org", SqlDbType.VarChar).Value = model.organization;
+                router.cmd.Parameters.Add("@cid", SqlDbType.VarChar).Value = model.conference_id;
+                router.cmd.Parameters.Add("@acm", SqlDbType.Int).Value = model.accomodation;
+
+                router.OpenConnection();
+                router.cmd.ExecuteNonQuery();
+                router.CloseConnection();
+                model.success = true;
+                model.message = "Participant Added";
+                return models.FormatMemberInfo(GetMemberByEmail(model,config));
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        //public const string UpdateParticipant = @"update dbo.conference_participants set name=@name,email=@mail,phone=@phone,location=@loc,gender=@gender,accomdation=@acm,postion=@pos,diet=@diet,institution=@org where id=@id";
+        public ParticipantModel UpdateInfo(ParticipantModel model,IConfiguration config)
+        {
+            try
+            {
+                router.cmd = new SqlCommand(Commands.UpdateParticipant, router.Connection(config));
+                router.cmd.Parameters.Add("@name", SqlDbType.VarChar).Value = model.name;
+                router.cmd.Parameters.Add("@phone", SqlDbType.VarChar).Value = model.phone;
+                router.cmd.Parameters.Add("@mail", SqlDbType.VarChar).Value = model.email;
+                router.cmd.Parameters.Add("@loc", SqlDbType.VarChar).Value = model.location;
+                router.cmd.Parameters.Add("@acm", SqlDbType.Int).Value = model.accomodation;
+                router.cmd.Parameters.Add("@gender", SqlDbType.VarChar).Value = model.gender;
+                router.cmd.Parameters.Add("@pos", SqlDbType.VarChar).Value = model.position;
+                router.cmd.Parameters.Add("@diet", SqlDbType.VarChar).Value = model.diet;
+                router.cmd.Parameters.Add("@org", SqlDbType.VarChar).Value = model.organization;
+                router.cmd.Parameters.Add("@id", SqlDbType.VarChar).Value = model.id;
+
+                router.OpenConnection();
+                router.cmd.ExecuteNonQuery();
+                router.CloseConnection();
+
+                model.success = true;
+                model.message = "Info Updated Successfull";
+                return model;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         /// <summary>
         /// ADD NEW CONFERENCE
         /// </summary>
@@ -84,10 +165,10 @@ namespace server.Services
                 router.cmd.Parameters.Add("@id", SqlDbType.VarChar).Value = model.id;
                 router.cmd.Parameters.Add("@title", SqlDbType.VarChar).Value = model.title;
                 router.cmd.Parameters.Add("@venue", SqlDbType.VarChar).Value = model.venue;
-                router.cmd.Parameters.Add("@date", SqlDbType.VarChar).Value = model.date;
+                router.cmd.Parameters.Add("@sdate", SqlDbType.VarChar).Value = model.start_date;
+                router.cmd.Parameters.Add("@edate", SqlDbType.VarChar).Value = model.end_date;
                 router.cmd.Parameters.Add("@des", SqlDbType.VarChar).Value = model.description;
                 router.cmd.Parameters.Add("@status", SqlDbType.Int).Value = model.status;
-                router.cmd.Parameters.Add("@time", SqlDbType.VarChar).Value = model.time;
 
                 router.OpenConnection();
                 router.cmd.ExecuteNonQuery();
@@ -186,6 +267,48 @@ namespace server.Services
                 router.tb = new DataTable();
                 router.cmd = new SqlCommand(Commands.GetParticipantById, router.Connection(configuration));
                 router.cmd.Parameters.Add("@id", SqlDbType.VarChar).Value = model.id;
+                router.OpenConnection();
+                router.da.SelectCommand = router.cmd;
+                router.da.Fill(router.tb);
+                router.CloseConnection();
+                return router.tb;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public DataTable GetMemberByEmail(ParticipantModel model, IConfiguration configuration)
+        {
+            try
+            {
+                router.da = new SqlDataAdapter();
+                router.tb = new DataTable();
+                router.cmd = new SqlCommand(Commands.GetParticipantByEmail, router.Connection(configuration));
+                router.cmd.Parameters.Add("@mail", SqlDbType.VarChar).Value = model.email;
+                router.OpenConnection();
+                router.da.SelectCommand = router.cmd;
+                router.da.Fill(router.tb);
+                router.CloseConnection();
+                return router.tb;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public DataTable GetMemberByEmailAndConference(ParticipantModel model, IConfiguration configuration)
+        {
+            try
+            {
+                router.da = new SqlDataAdapter();
+                router.tb = new DataTable();
+                router.cmd = new SqlCommand(Commands.CheckParticipant, router.Connection(configuration));
+                router.cmd.Parameters.Add("@mail", SqlDbType.VarChar).Value = model.email;
+                router.cmd.Parameters.Add("@cid", SqlDbType.VarChar).Value = model.conference_id;
                 router.OpenConnection();
                 router.da.SelectCommand = router.cmd;
                 router.da.Fill(router.tb);
@@ -336,5 +459,125 @@ namespace server.Services
             }
         }
 
+
+        ////////////////
+        ///
+        public void RegisterGuest(GuestModel model,IConfiguration config)
+        {
+            try
+            {
+                model.id = functions.GenerateGuestId();
+                while (GetGuestById(model, config).Rows.Count > 0)
+                {
+                    model.id = functions.GenerateGuestId();
+                }
+
+                router.cmd = new SqlCommand(Commands.AddGuest, router.Connection(config));
+                router.cmd.Parameters.Add("@id", SqlDbType.VarChar).Value = model.id;
+                router.cmd.Parameters.Add("@name", SqlDbType.VarChar).Value = model.name;
+                router.cmd.Parameters.Add("@role", SqlDbType.VarChar).Value = model.role;
+                router.cmd.Parameters.Add("@port", SqlDbType.VarChar).Value = model.portfolio;
+                router.cmd.Parameters.Add("@pic", SqlDbType.VarChar).Value = model.picture;
+                router.OpenConnection();
+                router.cmd.ExecuteNonQuery();
+                router.CloseConnection();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public DataTable GetGuestById(GuestModel model,IConfiguration configuration)
+        {
+            try
+            {
+                router.tb = new DataTable();
+                router.da = new SqlDataAdapter();
+
+                router.cmd = new SqlCommand(Commands.GetGuestById, router.Connection(configuration));
+                router.cmd.Parameters.Add("@id", SqlDbType.VarChar).Value = model.id;
+                router.OpenConnection();
+                router.da.SelectCommand = router.cmd;
+                router.da.Fill(router.tb);
+                router.CloseConnection();
+
+                return router.tb;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public DataTable GetGuest(IConfiguration configuration)
+        {
+            try
+            {
+                router.tb = new DataTable();
+                router.da = new SqlDataAdapter();
+
+                router.cmd = new SqlCommand(Commands.GetGuest, router.Connection(configuration));
+                router.OpenConnection();
+                router.da.SelectCommand = router.cmd;
+                router.da.Fill(router.tb);
+                router.CloseConnection();
+
+                return router.tb;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public void DeleteGuest(GuestModel model,IConfiguration configuration)
+        {
+            try
+            {
+                router.cmd = new SqlCommand(Commands.DeleteGuest, router.Connection(configuration));
+                router.cmd.Parameters.Add("@id", SqlDbType.VarChar).Value = model.id;
+                router.OpenConnection();
+                router.cmd.ExecuteNonQuery();
+                router.CloseConnection();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public ParticipantModel MemberLogin(ParticipantModel model,IConfiguration conf)
+        {
+            try
+            {
+                if (GetMemberByEmail(model, conf).Rows.Count <= 0)
+                {
+                    throw new Exception("Invalid Email Address");
+                }
+                else
+                {
+                    if(GetMemberByID(model,conf).Rows.Count <= 0)
+                    {
+                        throw new Exception("Invalid Participant ID");
+                    }
+                    else
+                    {
+                        return models.FormatMemberInfo(GetMemberByEmail(model,conf));
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
+
+
 }
