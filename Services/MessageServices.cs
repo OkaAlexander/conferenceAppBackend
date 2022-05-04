@@ -33,7 +33,7 @@ namespace server.Services
         {
 
 
-            string msg = string.Format(@"Hi {0}, Your Registration for {1} Conference is Successfull, Conference starts on {2} to {3}, Venue: {4}. For more info contact: 000 000 0000. Thank You :)", name,title,sdate,edate,venue);
+            string msg = string.Format(@"Hi {0}, Your Registration for {1} Conference is Successfull, Conference starts on {2} to {3}, Venue: {4}. For more info contact: 0244854109 OR 0543311515. Thank You :)", name,title,sdate,edate,venue);
             return msg;
         }
     }

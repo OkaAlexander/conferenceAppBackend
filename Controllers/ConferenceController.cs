@@ -8,7 +8,7 @@ using server.Functions;
 using server.Utils;
 using Microsoft.AspNetCore.Hosting;
 using System.Threading.Tasks;
-
+using System.Data;
 namespace server.Controllers
 {
     [Route("api/")]
@@ -77,14 +77,14 @@ namespace server.Controllers
                 model.name = Request.Form["name"].ToString();
                 model.phone = Request.Form["phone"].ToString();
                 model.gender = Request.Form["gender"].ToString();
-                model.email = Request.Form["email"].ToString();
-                model.position = Request.Form["position"].ToString();
+                model.email = Request.Form["email"].ToString().Trim();
+                model.position = Request.Form["position"].ToString().TrimEnd();
                 model.disability = Request.Form["disability"].ToString();
                 model.disabled =int.Parse(Request.Form["disabled"].ToString());
                 model.conference_id = Request.Form["conference_id"].ToString();
-                model.diet = Request.Form["diet"].ToString();
+                model.diet = Request.Form["diet"].ToString().TrimEnd();
                 model.location = Request.Form["location"].ToString();
-                model.organization = Request.Form["organization"].ToString();
+                model.organization = Request.Form["organization"].ToString().TrimEnd();
                 model.accomodation = int.Parse(Request.Form["accomodation"].ToString());
                 model.file =Request.Form.Files.Count>0? Request.Form.Files[0]:null;
                 validation.ValidateParticipant(model);
@@ -147,9 +147,9 @@ namespace server.Controllers
             {
                 var file = Request.Form["file"];
                 model.name = Request.Form["name"].ToString();
-                model.phone = Request.Form["phone"].ToString();
+                model.phone = Request.Form["phone"].ToString().TrimEnd();
                 model.gender = Request.Form["gender"].ToString();
-                model.email = Request.Form["email"].ToString();
+                model.email = Request.Form["email"].ToString().TrimEnd();
                 model.position = Request.Form["position"].ToString();
                 model.disability = Request.Form["disability"].ToString();
                 model.disabled = int.Parse(Request.Form["disabled"].ToString());
@@ -183,6 +183,24 @@ namespace server.Controllers
             }
         }
 
+        [HttpPost("member/remove")]
+        public JsonResult AdminRemoveParticipant(MemberInfoModel model)
+        {
+            try
+            {
+                services.RemoveMember(model,configuration);
+                Response.StatusCode = StatusCodes.Status200OK;
+                DeleteMemberResponseModel rm = new DeleteMemberResponseModel();
+                rm.message = "Participant Removed Successfully";
+                rm.data = services.GetAllParticipants(configuration);
+                return new JsonResult(Newtonsoft.Json.JsonConvert.SerializeObject(rm));
+            }
+            catch (Exception ex)
+            {
+
+                return Response404(ex.Message);
+            }
+        }
 
         [HttpPost("user/add")]
         public JsonResult AddUser(UserModel model)

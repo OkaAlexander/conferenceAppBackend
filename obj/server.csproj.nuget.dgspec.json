@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\23355\\Desktop\\conference\\server\\server.csproj": {}
+    "C:\\Users\\23355\\Desktop\\ConferApp\\server\\server.csproj": {}
   },
   "projects": {
-    "C:\\Users\\23355\\Desktop\\conference\\server\\server.csproj": {
+    "C:\\Users\\23355\\Desktop\\ConferApp\\server\\server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\23355\\Desktop\\conference\\server\\server.csproj",
+        "projectUniqueName": "C:\\Users\\23355\\Desktop\\ConferApp\\server\\server.csproj",
         "projectName": "server",
-        "projectPath": "C:\\Users\\23355\\Desktop\\conference\\server\\server.csproj",
+        "projectPath": "C:\\Users\\23355\\Desktop\\ConferApp\\server\\server.csproj",
         "packagesPath": "C:\\Users\\23355\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\23355\\Desktop\\conference\\server\\obj\\",
+        "outputPath": "C:\\Users\\23355\\Desktop\\ConferApp\\server\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -99,7 +99,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.200\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
         }
       }
     }

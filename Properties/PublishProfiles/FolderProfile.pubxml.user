@@ -4,7 +4,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <_PublishTargetUrl>C:\Users\alexa\OneDrive\Desktop\conference\server\bin\Release\net5.0\publish\</_PublishTargetUrl>
-    <History>True|2022-02-08T13:41:57.6290619Z;True|2022-02-08T13:16:30.6661187+00:00;True|2022-02-08T11:59:27.3557263+00:00;True|2022-02-08T10:48:16.8218467+00:00;</History>
+    <_PublishTargetUrl>C:\Users\23355\Desktop\ConferApp\server\bin\Release\net5.0\publish\</_PublishTargetUrl>
+    <History>True|2022-05-04T08:34:16.8590676Z;True|2022-04-29T15:55:07.9080063+00:00;True|2022-04-29T15:44:53.3753124+00:00;True|2022-04-22T16:33:45.5598221+00:00;True|2022-04-22T16:33:02.0409259+00:00;True|2022-04-22T12:04:41.3865168+00:00;True|2022-04-22T12:03:01.2127750+00:00;True|2022-03-21T16:43:35.9223161+00:00;True|2022-02-08T13:41:57.6290619+00:00;True|2022-02-08T13:16:30.6661187+00:00;True|2022-02-08T11:59:27.3557263+00:00;True|2022-02-08T10:48:16.8218467+00:00;</History>
   </PropertyGroup>
 </Project>

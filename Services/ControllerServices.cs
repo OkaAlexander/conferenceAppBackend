@@ -35,7 +35,7 @@ namespace server.Services
                 }
                 if(GetMemberByEmailAndConference(model,config).Rows.Count > 0)
                 {
-                    throw new Exception("You have already registered for this conference.For more info contact 000 000 0000. Thank You");
+                    throw new Exception("You have already registered for this conference.For more info contact 0244854109 || 0543311515. Thank You");
                 }
 
                 router.cmd = new SqlCommand(Commands.AddParticipant, router.Connection(config));
@@ -80,7 +80,7 @@ namespace server.Services
                 }
                 if (GetMemberByEmailAndConference(model, config).Rows.Count > 0)
                 {
-                    throw new Exception("You have already registered for this conference.For more info contact 000 000 0000. Thank You");
+                    throw new Exception("You have already registered for this conference.For more info contact 0244854109 || 0543311515. Thank You");
                 }
 
                 router.cmd = new SqlCommand(Commands.AddParticipant, router.Connection(config));
@@ -113,7 +113,7 @@ namespace server.Services
             }
         }
         //public const string UpdateParticipant = @"update dbo.conference_participants set name=@name,email=@mail,phone=@phone,location=@loc,gender=@gender,accomdation=@acm,postion=@pos,diet=@diet,institution=@org where id=@id";
-        public ParticipantModel UpdateInfo(ParticipantModel model,IConfiguration config)
+        public ParticipantModel UpdateInfo(ParticipantModel model, IConfiguration config)
         {
             try
             {
@@ -136,6 +136,23 @@ namespace server.Services
                 model.success = true;
                 model.message = "Info Updated Successfull";
                 return model;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public void RemoveMember(MemberInfoModel model,IConfiguration configuration)
+        {
+            try
+            {
+                router.cmd = new SqlCommand(Commands.RemoveParticipant, router.Connection(configuration));
+                router.cmd.Parameters.Add("@id", SqlDbType.VarChar).Value = model.id;
+                router.OpenConnection();
+                router.cmd.ExecuteNonQuery();
+                router.CloseConnection();
             }
             catch (Exception)
             {
@@ -214,7 +231,7 @@ namespace server.Services
                 router.cmd.ExecuteNonQuery();
                 router.CloseConnection();
                 model.success = true;
-                model.message = "User Added";
+                model.message = "Registration successful";
                 return model;
             }
             catch (Exception)

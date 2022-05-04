@@ -9,6 +9,8 @@
         public const string AddParticipant = @"insert into dbo.conference_participants(id,name,phone,email," +
                                              "organization,position,disabled,disability,diet,location,picture,gender,conference_id,accomodation)" +
                                              " values(@id,@name,@phone,@email,@org,@pos,@dis,@disa,@diet,@loc,@pic,@gender,@cid,@acm)";
+
+        public const string RemoveParticipant = "delete from dbo.conference_participants where id=@id";
         
         public const string UpdateParticipant = "update dbo.conference_participants set name=@name,email=@mail,phone=@phone,location=@loc,gender=@gender,accomodation=@acm,position=@pos,diet=@diet,organization=@org where id=@id";
         //
