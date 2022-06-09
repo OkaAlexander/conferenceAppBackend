@@ -12,6 +12,12 @@ namespace server.Functions
             return ConstantValues.CONFERENCE + rand.Next(100, 999);
         }
 
+        public string GeneratePackageId()
+        {
+            Random random = new Random();
+            return "PID" + random.Next(100, 99999);
+        }
+
         public string GenerateUserId()
         {
             Random rand = new Random();

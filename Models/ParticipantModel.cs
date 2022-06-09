@@ -20,6 +20,8 @@ namespace server.Models
         public string location { get; set; }
         public int accomodation { get; set; }
         public IFormFile file { get; set; }
-        
+        public string package_id { get; set; }
+
+
     }
 }

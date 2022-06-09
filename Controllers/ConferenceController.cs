@@ -40,6 +40,19 @@ namespace server.Controllers
                return Response404(ex.Message);
             }
         }
+        [HttpPost("packages/get")]
+        public JsonResult GetConferencePackages()
+        {
+            try
+            {
+                return new JsonResult(Newtonsoft.Json.JsonConvert.SerializeObject(services.GetAllConferencePackages(configuration)));
+            }
+            catch (Exception ex)
+            {
+
+               return Response404(ex.Message);
+            }
+        }
         [HttpPost("conference/add")]
         public JsonResult AddConference(ConferenceModel model)
         {
@@ -86,6 +99,7 @@ namespace server.Controllers
                 model.location = Request.Form["location"].ToString();
                 model.organization = Request.Form["organization"].ToString().TrimEnd();
                 model.accomodation = int.Parse(Request.Form["accomodation"].ToString());
+                model.package_id = Request.Form["package_id"].ToString();
                 model.file =Request.Form.Files.Count>0? Request.Form.Files[0]:null;
                 validation.ValidateParticipant(model);
                 if (Request.Form.Files.Count>0)

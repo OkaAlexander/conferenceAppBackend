@@ -16,5 +16,6 @@
         public string picture { get; set; }
         public string location { get; set; }
         public int accomodation { get; set; }
+        public string package_id { get; set; }
     }
 }

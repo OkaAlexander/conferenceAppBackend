@@ -7,6 +7,8 @@ using server.Utils;
 using server.Functions;
 using Microsoft.Data.SqlClient;
 using server.Constants;
+using System.Collections.Generic;
+
 namespace server.Services
 {
     public class ControllerServices
@@ -98,6 +100,7 @@ namespace server.Services
                 router.cmd.Parameters.Add("@org", SqlDbType.VarChar).Value = model.organization;
                 router.cmd.Parameters.Add("@cid", SqlDbType.VarChar).Value = model.conference_id;
                 router.cmd.Parameters.Add("@acm", SqlDbType.Int).Value = model.accomodation;
+                router.cmd.Parameters.Add("@pkid", SqlDbType.VarChar).Value = model.package_id;
 
                 router.OpenConnection();
                 router.cmd.ExecuteNonQuery();
@@ -176,7 +179,7 @@ namespace server.Services
                 {
                     model.id = functions.GenerateConferenceId();
                 }
-
+                HandleAddConferencePackage(model.package, configuration,model.id);
                 model.status = 0;
                 router.cmd = new SqlCommand(Commands.AddConference, router.Connection(configuration));
                 router.cmd.Parameters.Add("@id", SqlDbType.VarChar).Value = model.id;
@@ -194,6 +197,55 @@ namespace server.Services
                 model.message = "Conference Added";
                 return model;
 
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public DataTable GetAllConferencePackages(IConfiguration configuration)
+        {
+            try
+            {
+                router.da = new SqlDataAdapter();
+                router.tb = new DataTable();
+                router.cmd = new SqlCommand(Commands.GetallConferencePackages, router.Connection(configuration));
+                router.OpenConnection();
+                router.da.SelectCommand = router.cmd;
+                router.da.Fill(router.tb);
+                router.CloseConnection();
+                return router.tb;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public void HandleAddConferencePackage(List<PackageModel> data,IConfiguration configuration,string conferenceId)
+        {
+            try
+            {
+                foreach (PackageModel model in data)
+                {
+                    model.id = functions.GeneratePackageId();
+                    model.conferenceId = conferenceId;
+                    router.cmd = new SqlCommand(Commands.AddConferencePackage, router.Connection(configuration));
+                    router.cmd.Parameters.Add("@id", SqlDbType.VarChar).Value =model.id;
+                    router.cmd.Parameters.Add("@cid", SqlDbType.VarChar).Value =model.conferenceId;
+                    router.cmd.Parameters.Add("@title", SqlDbType.VarChar).Value =model.title;
+                    router.cmd.Parameters.Add("@rf", SqlDbType.Decimal).Value =model.registrationFee;
+                    router.cmd.Parameters.Add("@mc", SqlDbType.Decimal).Value =model.materialCost;
+                    router.cmd.Parameters.Add("@cf", SqlDbType.Decimal).Value =model.costOfFeeding;
+                    router.cmd.Parameters.Add("@ca", SqlDbType.Decimal).Value =model.costOfAccomodation;
+                    router.cmd.Parameters.Add("@cd", SqlDbType.Int).Value =model.conferenceDuration;
+                    router.OpenConnection();
+                    router.cmd.ExecuteNonQuery();
+                    router.CloseConnection();
+                }
             }
             catch (Exception)
             {
